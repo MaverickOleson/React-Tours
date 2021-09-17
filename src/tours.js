@@ -1,4 +1,6 @@
-import './App.css';
+import './styles/tours.css';
+import Loading from './loading';
+import Error from './error';
 import React, {useState, useEffect} from 'react';
 
 function App() {
@@ -14,38 +16,48 @@ function App() {
     }
   ]);
 
-  useEffect(() => {
+  function load(){
     fetch("https://course-api.com/react-tours-project")
       .then((resp)=>{
-        setIsLoading(false);
+        setTimeout(() => {setIsLoading(false)}, 3400);
         if(resp.ok){
           return resp.json();
         }
-        setIsLoading(false);
         setError(true);
       })
       .then((tours)=>{
-        setTours(tours);
+        setTours(tours.map(tour=>{return {...tour, readMore: false}}));
       })
       .catch((error)=>{
-        setIsLoading(false);
+        setTimeout(() => {setIsLoading(false)}, 3400);
         setError(true);
+        console.log(error);
       });
+  }
 
+  useEffect(() => {
+    load()
   }, []);
 
   function deleteTour(id){
     setTours(Tours.filter(tour=>tour.id !== id));
   }
+  
+  function readMore(id){
+    setTours(Tours.map(tour=>{
+      const {name, info, image, price, readMore} = tour;
+      return (tour.id !== id) ? tour : {id: tour.id, name, info, image, price, readMore: !readMore}
+    }))
+  }
 
   if(isLoading) {
     return (
-      <h1>Loading...</h1>
+      <Loading/>
     );
   }
   else if(Error) {
     return (
-      <h1>Error... Reload</h1>
+      <Error/>
     );
   }
   else{
@@ -61,13 +73,14 @@ function App() {
                     <h4>{tour.name}</h4>
                     <h4>${tour.price}</h4>
                   </div>
-                  <p>{tour.info}</p>
+                  <p>{(tour.readMore) ? tour.info : (tour.info).substring(0, 200)}{(tour.readMore) ? <span onClick={()=>readMore(tour.id)}>...<span>Read Less</span></span>: <span onClick={()=>readMore(tour.id)}>...<span>Read More</span></span>}</p>
                 </div>
                 <button onClick={()=>deleteTour(tour.id)}>Not Interested</button>
               </div>
             )
           })
         }
+        <button onClick={()=>load()} className='reload'>Reload Tours</button>
       </div>
     );
   }

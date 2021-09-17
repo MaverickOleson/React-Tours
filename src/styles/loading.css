@@ -1,0 +1,36 @@
+.loading {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+.loading h1 {
+  font-size: 50px;
+}
+.loading h1::after {
+  animation: dotDotDot 3.4s linear infinite;
+  content: "Loading";
+}
+
+@keyframes dotDotDot {
+  0% {
+    content: "Loading";
+  }
+  25% {
+    content: "Loading.";
+  }
+  50% {
+    content: "Loading..";
+  }
+  75% {
+    content: "Loading...";
+  }
+  100% {
+    content: "Loading...";
+  }
+}
+
+/*# sourceMappingURL=loading.css.map */
